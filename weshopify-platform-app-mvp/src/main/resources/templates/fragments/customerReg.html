@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+ 
+<head>
+   
+</head>
+<!-- ============================================================== -->
+<!-- signup form  -->
+<!-- ============================================================== -->
+
+<body>
+    <!-- ============================================================== -->
+    <!-- signup form  -->
+    <!-- ============================================================== -->
+    <div th:fragment="addCustomerPage">
+    <form class="splash-container" th:action="@{/addCustomer}" method="post" th:object="${customerBean}">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-1">Customer Form</h3>               
+            </div>
+            <div th:if="${isRegistered}">
+				<font color=""green>
+					<p>Registration Successfull. <a href="./home" class="text-secondary">Login Here.</a></p>
+					
+				</font>
+			</div>
+			<!--<div th:if="${isRegistered}">
+				<font color=""red>
+					<p>Registration Faild. Please try again</p>
+					
+				</font>
+			</div>-->
+            <div class="card-body">
+                <div class="form-group">
+                    <input class="form-control form-control-lg" type="text" name="userName" required="" placeholder="Username" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <input class="form-control form-control-lg" type="email" name="email" required="" placeholder="E-mail" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <input class="form-control form-control-lg" id="pass1" name="password" type="password" required="" placeholder="Password">
+                </div>
+                <div class="form-group">
+                    <input class="form-control form-control-lg"  id="mobile" type="text" name="mobile" required="" placeholder="Mobile">
+                </div>
+                <div class="form-group pt-2">
+                    <button class="btn btn-block btn-primary" type="submit">Create Customer</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    </div>
+</body>
+
+ 
+</html>
