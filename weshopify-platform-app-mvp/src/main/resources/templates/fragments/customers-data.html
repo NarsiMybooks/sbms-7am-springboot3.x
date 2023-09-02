@@ -29,22 +29,35 @@
 									</tr>
 								</thead>
 								<tbody>
-									<tr>
-										<td>Test</td>
-										<td>User</td>
-										<td>testUser@yopmail.com</td>
-										<td>testUser</td>
-										<td>9876543210</td>
+									Does Customers Found? <span th:text="${customersFound}"></span>
+									<div th:unless="${customersFound} or ${isCustomerRegistered}">
+										<font color="red" >
+											<tr>
+												<p><b>No Customers Found</b></p>
+											</tr>
+
+										</font>
+									</div>
+									<div th:if="${customersFound} or ${isCustomerRegistered}">
+										<tr th:each="customer:${listOfCustomers}">
+										<td><span th:text="${customer.firstName}" /></td>
+										<td><span th:text="${customer.lastName}" /></td>
+										<td><span th:text="${customer.userName}" /></td>
+										<td><span th:text="${customer.email}"></td>
+										<td><span th:text="${customer.mobile}"></td>
 										<td>
-										
+
 											<div>
 												<p>
-													<i class="fa fa-address-card-o" aria-hidden="true"><a href="">Edit</a></i> |
+													<i class="fa fa-address-card-o" aria-hidden="true"><a
+															href="">Edit</a></i> |
 													<i class="fa fa-trash" aria-hidden="true"><a href="">Delete</a></i>
 												</p>
 											</div>
 										</td>
 									</tr>
+									</div>
+									
 								</tbody>
 							</table>
 						</div>

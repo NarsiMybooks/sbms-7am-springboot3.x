@@ -1,8 +1,11 @@
 package com.weshopifyplatform.app.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -27,6 +30,15 @@ public class HomeController {
 		System.out.println(authenticationBean.toString());
 		 authenticationBean = customerService.authenticateUser(authenticationBean);
 		 if(authenticationBean.isAuthenticated()) {
+			 boolean customersFound = false;
+			  List<CustomerBean> customersList = customerService.findAllCustomers();
+			  if(!CollectionUtils.isEmpty(customersList)) {
+				  model.addAttribute("listOfCustomers", customersList);
+				  customersFound = true;
+			  }
+			model.addAttribute("customersFound", customersFound);
+			  
+			  
 			 return "dashboard.html"; 
 		 }else {
 			 String message = "Bad Credentials!! Please Try agin with the proper UserName and Password";
