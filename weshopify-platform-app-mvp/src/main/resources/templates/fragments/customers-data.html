@@ -42,16 +42,17 @@
 										<tr th:each="customer:${listOfCustomers}">
 										<td><span th:text="${customer.firstName}" /></td>
 										<td><span th:text="${customer.lastName}" /></td>
-										<td><span th:text="${customer.userName}" /></td>
 										<td><span th:text="${customer.email}"></td>
+										<td><span th:text="${customer.userName}" /></td>
 										<td><span th:text="${customer.mobile}"></td>
 										<td>
 
 											<div>
 												<p>
-													<i class="fa fa-address-card-o" aria-hidden="true"><a
-															href="">Edit</a></i> |
-													<i class="fa fa-trash" aria-hidden="true"><a href="">Delete</a></i>
+													<i class="fas fa-edit" aria-hidden="true">
+														<a th:href="@{'/editCustomerPage?custId='+${customer.id}}">Edit</a></i> |
+													<i class="fa fa-trash" aria-hidden="true">
+														<a th:href="@{'/deleteCustomer?custId='+${customer.id}}">Delete</a></i>
 												</p>
 											</div>
 										</td>

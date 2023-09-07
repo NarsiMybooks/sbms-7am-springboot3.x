@@ -20,10 +20,22 @@ public class CustomerManagementServiceImpl implements CustomerManagementService 
 
 	@Override
 	public CustomerBean registerCustomer(CustomerBean customerBean) {
-		customerBean.setId(UUID.randomUUID().toString());
+		
+		System.out.println("Existed Customers in DB");
+		System.out.println(findAllCustomers());
 		if(StringUtils.hasText(customerBean.getRole())) {
-			CUSTOMER_IN_MEMORY_DB.put(customerBean.getEmail(), customerBean);
+			/**
+			 * Customer Registration
+			 */
+			if(!StringUtils.hasText(customerBean.getId())) {
+				customerBean.setId(UUID.randomUUID().toString());
+			}
+			CUSTOMER_IN_MEMORY_DB.put(customerBean.getId(), customerBean);
 		}else {
+			/**
+			 * User Registration
+			 */
+			customerBean.setId(UUID.randomUUID().toString());
 			IN_MEMORY_DB.put(customerBean.getUserName(), customerBean);
 		}
 		
@@ -46,7 +58,19 @@ public class CustomerManagementServiceImpl implements CustomerManagementService 
 		// TODO Auto-generated method stub
 		List<CustomerBean> customersList = new ArrayList<>();
 		customersList.addAll(CUSTOMER_IN_MEMORY_DB.values());
+		System.out.println("Customers size is:\t"+customersList.size());
 		return customersList;
+	}
+
+	@Override
+	public List<CustomerBean> deleteCustomerById(String custId) {
+		CUSTOMER_IN_MEMORY_DB.remove(custId);
+		return findAllCustomers();
+	}
+
+	@Override
+	public CustomerBean findCustomerById(String customerId) {
+		return CUSTOMER_IN_MEMORY_DB.get(customerId);
 	}
 
 }

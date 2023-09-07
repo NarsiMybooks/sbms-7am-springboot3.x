@@ -10,4 +10,8 @@ public interface CustomerManagementService {
 	CustomerBean registerCustomer(CustomerBean customerBean);
 	AuthenticationBean authenticateUser(AuthenticationBean authenticationBean);
 	List<CustomerBean> findAllCustomers();
+	
+	List<CustomerBean> deleteCustomerById(String custId);
+	CustomerBean findCustomerById(String customerId);
+	
 }
