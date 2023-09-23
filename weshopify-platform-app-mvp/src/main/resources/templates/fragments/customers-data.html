@@ -31,7 +31,7 @@
 								<tbody>
 									Does Customers Found? <span th:text="${customersFound}"></span>
 									<div th:unless="${customersFound} or ${isCustomerRegistered}">
-										<font color="red" >
+										<font color="red">
 											<tr>
 												<p><b>No Customers Found</b></p>
 											</tr>
@@ -40,28 +40,71 @@
 									</div>
 									<div th:if="${customersFound} or ${isCustomerRegistered}">
 										<tr th:each="customer:${listOfCustomers}">
-										<td><span th:text="${customer.firstName}" /></td>
-										<td><span th:text="${customer.lastName}" /></td>
-										<td><span th:text="${customer.email}"></td>
-										<td><span th:text="${customer.userName}" /></td>
-										<td><span th:text="${customer.mobile}"></td>
-										<td>
+											<td><span th:text="${customer.firstName}" /></td>
+											<td><span th:text="${customer.lastName}" /></td>
+											<td><span th:text="${customer.email}"></td>
+											<td><span th:text="${customer.userName}" /></td>
+											<td><span th:text="${customer.mobile}"></td>
+											<td>
 
-											<div>
-												<p>
-													<i class="fas fa-edit" aria-hidden="true">
-														<a th:href="@{'/editCustomerPage?custId='+${customer.id}}">Edit</a></i> |
-													<i class="fa fa-trash" aria-hidden="true">
-														<a th:href="@{'/deleteCustomer?custId='+${customer.id}}">Delete</a></i>
-												</p>
-											</div>
-										</td>
-									</tr>
+												<div>
+													<p>
+														<i class="fas fa-edit" aria-hidden="true">
+															<a
+																th:href="@{'/editCustomerPage?custId='+${customer.id}}">Edit</a></i>
+														|
+														<i class="fa fa-trash" aria-hidden="true">
+															<a
+																th:href="@{'/deleteCustomer?custId='+${customer.id}}">Delete</a></i>
+													</p>
+												</div>
+											</td>
+										</tr>
 									</div>
-									
+
 								</tbody>
 							</table>
 						</div>
+						<div class="btn-group" >
+							<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+								data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								NoOfRecordsPerPage
+							</button>
+							<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+								<a class="dropdown-item" th:href="@{'/view-customers?pageNum=0&noOfRecPerPage=2'}">2</a>
+								<a class="dropdown-item"
+									th:href="@{'/view-customers?pageNum=0&noOfRecPerPage=10'}">10</a>
+								<a class="dropdown-item"
+									th:href="@{'/view-customers?pageNum=0&noOfRecPerPage=15'}">15</a>
+							</div>
+							
+							
+						</div>
+						<div class="d-flex justify-content-center">
+							<nav aria-label="Page navigation example">
+								<ul class="pagination">
+									<li class="page-item"><a class="page-link" 
+									th:href="@{'/view-customers?pageNum='+${prevPage}+'&noOfRecPerPage='+${noOfRecPerPage}}">Previous</a></li>
+									<!--<li class="page-item"><a class="page-link" href="#">1</a></li>
+									<li class="page-item"><a class="page-link" href="#">2</a></li>
+									<li class="page-item"><a class="page-link" href="#">3</a></li>-->
+									<div th:each="page:${#numbers.sequence(1, totalPages)}">
+										<li class="page-item">
+											<a class="page-link" 
+											th:href="@{'/view-customers?pageNum='+${page}+'&noOfRecPerPage='+${noOfRecPerPage}}">
+											<span th:text="${page}"></span>
+										</a>
+										</li>
+										
+									</div>
+									<li class="page-item"><a class="page-link" 
+										th:href="@{'/view-customers?pageNum='+${nextPage}+'&noOfRecPerPage='+${noOfRecPerPage}}">Next</a></li>
+									
+								</ul>
+							</nav>
+						</div>
+						
+
 					</div>
 				</div>
 			</div>

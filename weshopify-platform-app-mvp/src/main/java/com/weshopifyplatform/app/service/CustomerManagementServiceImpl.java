@@ -1,11 +1,13 @@
 package com.weshopifyplatform.app.service;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -17,41 +19,25 @@ import com.weshopifyplatform.app.repos.CustomerRepository;
 @Service
 public class CustomerManagementServiceImpl implements CustomerManagementService {
 	
-	private static LinkedHashMap<String, CustomerBean> IN_MEMORY_DB = new LinkedHashMap<>();
-	private static LinkedHashMap<String, CustomerBean> CUSTOMER_IN_MEMORY_DB = new LinkedHashMap<>();
-
 	@Autowired
 	private CustomerRepository customerRepo;
 	
 	@Override
 	public CustomerBean registerCustomer(CustomerBean customerBean) {
-		
-		System.out.println("Existed Customers in DB");
-		System.out.println(findAllCustomers());
-		if(StringUtils.hasText(customerBean.getRole())) {
-			/**
-			 * Customer Registration
-			 */
-			if(!StringUtils.hasText(customerBean.getId())) {
-				customerBean.setId(UUID.randomUUID().toString());
-			}
-			CUSTOMER_IN_MEMORY_DB.put(customerBean.getId(), customerBean);
-		}else {
-			/**
-			 * User Registration
-			 */
-			customerBean.setId(UUID.randomUUID().toString());
-			IN_MEMORY_DB.put(customerBean.getUserName(), customerBean);
+		if(!StringUtils.hasText(customerBean.getRole())) {
+			customerBean.setRole("user");
 		}
-		
+		Customer customer = mapBeanToEntity(customerBean);
+		customerRepo.save(customer);
+		customerBean = mapEntityToBean(customer);
 		return customerBean;
 	}
 
 	@Override
 	public AuthenticationBean authenticateUser(AuthenticationBean authenticationBean) {
 		
-		CustomerBean customerBean =  IN_MEMORY_DB.get(authenticationBean.getUserName());
-		if(customerBean != null && customerBean.getPassword().equals(authenticationBean.getPassword())) {
+		Customer customer = customerRepo.findCustomerByUserName(authenticationBean.getUserName());
+		if(customer != null && customer.getPassword().equals(authenticationBean.getPassword())) {
 			authenticationBean.setAuthenticated(true);
 		}
 		
@@ -61,25 +47,32 @@ public class CustomerManagementServiceImpl implements CustomerManagementService 
 	@Override
 	public List<CustomerBean> findAllCustomers() {
 		// TODO Auto-generated method stub
-		List<CustomerBean> customersList = new ArrayList<>();
-		customersList.addAll(CUSTOMER_IN_MEMORY_DB.values());
-		System.out.println("Customers size is:\t"+customersList.size());
-		return customersList;
+		List<CustomerBean> customersBeanList = new ArrayList<>();
+		Iterable<Customer> customersList = customerRepo.findAll();
+		customersList.forEach(customerEntity->{
+			CustomerBean customerBean = mapEntityToBean(customerEntity);
+			customersBeanList.add(customerBean);
+		});
+		return customersBeanList;
 	}
 
 	@Override
 	public List<CustomerBean> deleteCustomerById(String custId) {
-		CUSTOMER_IN_MEMORY_DB.remove(custId);
+		customerRepo.deleteById(Integer.valueOf(custId));
 		return findAllCustomers();
 	}
 
 	@Override
 	public CustomerBean findCustomerById(String customerId) {
-		return CUSTOMER_IN_MEMORY_DB.get(customerId);
+		Customer customer = customerRepo.findById(Integer.valueOf(customerId)).get();
+		return mapEntityToBean(customer);
 	}
 	
 	private Customer mapBeanToEntity(CustomerBean customerBean) {
 		Customer customer = new Customer();
+		if(customerBean.getId() != null) {
+			customer.setId(Integer.valueOf(customerBean.getId()));
+		}
 		customer.setFirstName(customerBean.getFirstName());
 		customer.setLastName(customerBean.getLastName());
 		customer.setEmail(customerBean.getEmail());
@@ -98,8 +91,23 @@ public class CustomerManagementServiceImpl implements CustomerManagementService 
 		customerBean.setPassword(customer.getPassword());
 		customerBean.setMobile(customer.getMobile());
 		customerBean.setUserName(customer.getUserName());
+		customerBean.setId(String.valueOf(customer.getId()));
 	
 		return customerBean;
+	}
+
+	@Override
+	public List<CustomerBean> findAllCustomers(int currPage, int noOfRecPerPage) {
+		PageRequest page = PageRequest.of(currPage, noOfRecPerPage);
+		Sort.by(Direction.DESC, "email");
+		Page<Customer> customerPage = customerRepo.findAll(page);
+		List<Customer> customersList = customerPage.getContent();
+		List<CustomerBean> customersBeanList = new ArrayList<>();
+		customersList.forEach(customerEntity->{
+			CustomerBean customerBean = mapEntityToBean(customerEntity);
+			customersBeanList.add(customerBean);
+		});
+		return customersBeanList;
 	}
 
 }

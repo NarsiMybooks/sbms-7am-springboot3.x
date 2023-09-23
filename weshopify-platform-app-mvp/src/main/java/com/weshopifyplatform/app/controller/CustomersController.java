@@ -46,12 +46,27 @@ public class CustomersController {
 	@RequestMapping(value = {"/viewCustomersPage"})
 	public String viewCustomersPage(Model model) {
 		 boolean customersFound = false;
-		  List<CustomerBean> customersList = customerManagementService.findAllCustomers();
-		  if(!CollectionUtils.isEmpty(customersList)) {
-			  model.addAttribute("listOfCustomers", customersList);
-			  customersFound = true;
-		  }
+		 
+		  List<CustomerBean> totalCustomersList = customerManagementService.findAllCustomers();
+		  int currPage = 1;
+		  int noOfRecPerPage = 2;
 		  model.addAttribute("customersFound", customersFound);
+		  int totalCustomersCount = totalCustomersList.size();
+		  System.out.println("Total Records are:\t"+totalCustomersCount);
+		  List<CustomerBean> customersList = customerManagementService.findAllCustomers(currPage-1, noOfRecPerPage);
+			if(!CollectionUtils.isEmpty(customersList)) {
+				  model.addAttribute("listOfCustomers", customersList);
+				  customersFound = true;
+			}
+		  int totalNoOfPages = totalCustomersCount/noOfRecPerPage+1;
+			System.out.println("Total Number Of Pages are:\t"+totalNoOfPages);
+			  model.addAttribute("customersFound", customersFound);
+			  model.addAttribute("totalRecInDb", totalCustomersCount);
+			  model.addAttribute("totalPages", totalNoOfPages);
+			  model.addAttribute("noOfRecPerPage", noOfRecPerPage);
+			  model.addAttribute("nextPage",currPage+1);
+			  model.addAttribute("prevPage", currPage);
+			  model.addAttribute("currPage", currPage);
 		  
 		  return "list-customers.html";
 	}
@@ -77,5 +92,35 @@ public class CustomersController {
 		model.addAttribute("customerBean", customerBean);
 		return "add-customers.html";
 	}
+	
+	@RequestMapping(value ={"/view-customers"})
+	public String viewAllPagingCustomers(@RequestParam("pageNum") int currPage, 
+			@RequestParam("noOfRecPerPage") int noOfRecPerPage, Model model) {
+		boolean customersFound = false;	
+		int nextPage = currPage+1;
+		int prevPage = 1;
+		if(currPage != 0) {
+			currPage = currPage-1;
+			prevPage = currPage;
+		}
+		List<CustomerBean> customersList = customerManagementService.findAllCustomers(currPage, noOfRecPerPage);
+		if(!CollectionUtils.isEmpty(customersList)) {
+			  model.addAttribute("listOfCustomers", customersList);
+			  customersFound = true;
+		}
+		List<CustomerBean> totalCustomersList =  customerManagementService.findAllCustomers();
+		int totalCustomersCount = totalCustomersList.size();
+		System.out.println("Total Records are:\t"+totalCustomersCount);
+		int totalNoOfPages = (totalCustomersCount/noOfRecPerPage)+1;
+		System.out.println("Total Number Of Pages are:\t"+totalNoOfPages);
+		  model.addAttribute("customersFound", customersFound);
+		  model.addAttribute("totalRecInDb", totalCustomersList.size());
+		  model.addAttribute("totalPages", totalNoOfPages);
+		  model.addAttribute("noOfRecPerPage", noOfRecPerPage);
+		  model.addAttribute("nextPage",nextPage);
+		  model.addAttribute("prevPage", prevPage);
+		return "list-customers.html";
+	}
+	
 	
 }
