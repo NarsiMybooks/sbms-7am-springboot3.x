@@ -28,23 +28,37 @@ public class HomeController {
 	@RequestMapping(value = {"/login"})
 	public String doLogin(@ModelAttribute("authnBean") AuthenticationBean authenticationBean, Model model) {
 		System.out.println(authenticationBean.toString());
-		 authenticationBean = customerService.authenticateUser(authenticationBean);
-		 if(authenticationBean.isAuthenticated()) {
-			 boolean customersFound = false;
-			  List<CustomerBean> customersList = customerService.findAllCustomers();
-			  if(!CollectionUtils.isEmpty(customersList)) {
-				  model.addAttribute("listOfCustomers", customersList);
-				  customersFound = true;
-			  }
+		authenticationBean = customerService.authenticateUser(authenticationBean);
+		if (authenticationBean.isAuthenticated()) {
+			boolean customersFound = false;
+			List<CustomerBean> totalCustomersList = customerService.findAllCustomers();
+			int totalCustomersCount = totalCustomersList.size();
+			System.out.println("Total Records are:\t" + totalCustomersCount);
+			int currPage = 1;
+			int noOfRecPerPage = 2;
+			List<CustomerBean> customersList = customerService.findAllCustomers(currPage - 1, noOfRecPerPage);
+			if (!CollectionUtils.isEmpty(customersList)) {
+				model.addAttribute("listOfCustomers", customersList);
+				customersFound = true;
+				model.addAttribute("customersFound", true);
+			}
+
+			int totalNoOfPages = totalCustomersCount / noOfRecPerPage + 1;
+			System.out.println("Total Number Of Pages are:\t" + totalNoOfPages);
 			model.addAttribute("customersFound", customersFound);
-			  
-			  
-			 return "dashboard.html"; 
-		 }else {
-			 String message = "Bad Credentials!! Please Try agin with the proper UserName and Password";
-			 model.addAttribute("message", message);
-			 return "home.html";
-		 }
+			model.addAttribute("totalRecInDb", totalCustomersCount);
+			model.addAttribute("totalPages", totalNoOfPages);
+			model.addAttribute("noOfRecPerPage", noOfRecPerPage);
+			model.addAttribute("nextPage", currPage + 1);
+			model.addAttribute("prevPage", currPage);
+			model.addAttribute("currPage", currPage);
+
+			return "dashboard.html";
+		} else {
+			String message = "Bad Credentials!! Please Try agin with the proper UserName and Password";
+			model.addAttribute("message", message);
+			return "home.html";
+		}
 		
 	}
 	
@@ -56,7 +70,7 @@ public class HomeController {
 	
 	@RequestMapping(value = {"/signup"})
 	public String handleSignupData(@ModelAttribute("customerBean") CustomerBean customerBean,Model model) {
-		System.out.println(customerBean.toString());
+		System.out.println("handleSignupData"+customerBean.toString());
 		customerBean =  customerService.registerCustomer(customerBean);
 		boolean isRegistered = false;
 		if(customerBean != null && customerBean.getId() != null) {

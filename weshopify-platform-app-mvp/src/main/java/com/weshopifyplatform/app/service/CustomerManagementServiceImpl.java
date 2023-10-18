@@ -16,7 +16,10 @@ import com.weshopifyplatform.app.beans.CustomerBean;
 import com.weshopifyplatform.app.models.Customer;
 import com.weshopifyplatform.app.repos.CustomerRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class CustomerManagementServiceImpl implements CustomerManagementService {
 	
 	@Autowired
@@ -24,11 +27,13 @@ public class CustomerManagementServiceImpl implements CustomerManagementService 
 	
 	@Override
 	public CustomerBean registerCustomer(CustomerBean customerBean) {
+		log.info("i am registerCustomer method:\t"+customerBean.toString());
 		if(!StringUtils.hasText(customerBean.getRole())) {
 			customerBean.setRole("user");
 		}
 		Customer customer = mapBeanToEntity(customerBean);
 		customerRepo.save(customer);
+		log.info("Customer Registered Successfully"+customer.getId());
 		customerBean = mapEntityToBean(customer);
 		return customerBean;
 	}
