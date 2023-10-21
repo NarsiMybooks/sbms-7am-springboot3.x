@@ -1,4 +1,4 @@
 # sbms-7am-springboot3.x
  sbms-7am-springboot3.x
 
- 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
+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
