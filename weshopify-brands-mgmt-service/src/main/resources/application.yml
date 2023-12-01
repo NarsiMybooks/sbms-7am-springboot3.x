@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: weshopify-brands-mgmt-service
+    
+  profiles:
+    active:
+    - dev
+    
+server:
+  port: 5053
+ 
+---
+spring:
+  data:
+    mongodb:
+      database: weshopify-brands-service-cluster
+      uri: mongodb+srv://weshopifyAdmin:weshopifyAdmin@weshopify-brands-servic.opdv9jc.mongodb.net/?retryWrites=true&w=majority
+      auto-index-creation: ${MONGO_AUTO_INDEX_CREATION:true}
+  config:
+    activate:
+      on-profile:
+      - dev
+---
+#QA Profile
+spring: 
+ datasource: 
+  url: jdbc:h2:mem:${BRANDS_DB:weshopify-brands}
+  driver-class-name: org.h2.Driver
+  username: ${CATEGORIES_DB_USER_NAME:sa}
+  password: ${CATEGORIES_DB_USER_PASSWORD:admin}
+ h2:
+    console:
+      enabled: true
+      path: /h2Console
+ 
+ config:
+    activate:
+      on-profile:
+      - qa
+
