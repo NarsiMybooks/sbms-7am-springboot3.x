@@ -7,11 +7,16 @@ spring:
     show-sql: true    
   profiles:
     active:
-    - qa    
+    - dev    
 server:
   port: 5052
   
-
+eureka:
+  client:
+    service-url: 
+      defaultzone: http://localhost:8761/
+    fetch-registry: true
+    register-with-eureka: true
   
 
 --- 

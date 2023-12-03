@@ -16,6 +16,7 @@ import com.weshopifyplatform.app.beans.BrandsBean;
 import com.weshopifyplatform.app.beans.CategoriesBean;
 import com.weshopifyplatform.app.entities.Brands;
 import com.weshopifyplatform.app.outbound.CategoriesOutboundCommunicator;
+import com.weshopifyplatform.app.outbound.CategoriesOutboundFeignClient;
 import com.weshopifyplatform.app.repos.BrandsDocumentRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -31,24 +32,19 @@ public class BrandsManagementServiceImpl implements BrandsManagementService {
 	private CategoriesOutboundCommunicator categoriesClient;
 	
 	@Autowired
+	private CategoriesOutboundFeignClient catgoriesFeignClient;
+	
+	@Autowired
 	private ModelMapper mapper;
 	
 	@Override
 	public BrandsBean createBrand(BrandsBean brandsBean) {
 		Brands brands = mapper.map(brandsBean, Brands.class);
 		List<CategoriesBean> categoriesList = new ArrayList<>();
-		ObjectMapper objectMapper = new ObjectMapper();
 		if(!CollectionUtils.isEmpty(brandsBean.getCategories())) {
 			brandsBean.getCategories().stream().forEach(catBean->{
 				log.info("category id in create brands:\t"+catBean.getId());
-			  String catObj =	categoriesClient.getCategoryById(catBean.getId());
-			  System.out.println("categories data from category service is:\t"+catObj);
-			  try {
-				catBean = objectMapper.readValue(catObj, CategoriesBean.class);
-			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			catBean =	catgoriesFeignClient.getCategoryById(catBean.getId());
 			  System.out.println("catgories object:\t"+catBean.toString());
 			  categoriesList.add(catBean);
 			});

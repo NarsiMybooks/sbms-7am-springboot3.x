@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: weshopify-service-registry
+    
+server:
+  port: ${SERVICE_REGITRY_PORT:8761}
+  
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+       
+ 

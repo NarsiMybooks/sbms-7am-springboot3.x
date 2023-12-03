@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: weshopify-platform-gateway
+    
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true #locating the Service ID's' in the registry
+      routes:
+       - id: WESHOPIFY-CATEGORIES-MGMT-SERVICE
+         uri: lb://WESHOPIFY-CATEGORIES-MGMT-SERVICE
+         predicates:
+          - Path=/spg-categories/**
+         filters:
+          - RewritePath=/spg-categories/(?<segment>.*), /${segment}
+     
+        
+       - id: WESHOPIFY-BRANDS-MGMT-SERVICE
+         uri: lb://WESHOPIFY-BRANDS-MGMT-SERVICE
+         predicates:
+          - Path=/spg-brands/**
+         filters:
+          - RewritePath=/spg-brands/(?<segment>.*), /${segment}
+                     
+    
+server:
+  port: 5055
+  
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultzone: http://localhost:8761/
