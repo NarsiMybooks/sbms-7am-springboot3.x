@@ -1,6 +1,7 @@
 package com.weshopifyplatform.app.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -9,9 +10,13 @@ import org.springframework.util.CollectionUtils;
 
 import com.weshopifyplatform.app.beans.CategoriesBean;
 import com.weshopifyplatform.app.entities.Categories;
+import com.weshopifyplatform.app.exceptions.CategoriesException;
 import com.weshopifyplatform.app.repo.CategoriesRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class CategoriesServiceImpl implements CategoriesService {
 
 	private CategoriesRepository categoriesRepository;
@@ -58,7 +63,18 @@ public class CategoriesServiceImpl implements CategoriesService {
 
 	@Override
 	public CategoriesBean getCategoryById(int categoryId) {
-		return mapEntityToBean(categoriesRepository.findById(categoryId).get());
+		try {
+			Optional<Categories> opt = categoriesRepository.findById(categoryId);
+			if(opt.isPresent()) {
+				return mapEntityToBean(opt.get());
+			}else {
+				throw new CategoriesException("Categories Not found with the Category Id "+categoryId);
+			}
+		}catch (Exception e) {
+			log.error(e.getMessage());
+			log.error(e.getLocalizedMessage());
+			throw new CategoriesException(e.getMessage());
+		}
 	}
 
 	@Override

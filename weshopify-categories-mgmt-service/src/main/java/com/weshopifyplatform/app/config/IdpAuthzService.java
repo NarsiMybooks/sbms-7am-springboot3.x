@@ -14,7 +14,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import com.weshopifyplatform.app.exceptions.AccessTokenException;
+
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class IdpAuthzService {
 
 	ValueOperations<String, String> valueOps = null;
@@ -26,18 +31,27 @@ public class IdpAuthzService {
 
 	public Authentication authzUser(String accessToken) {
 		Authentication authn = null;
-		String userProfile = getUserProfile(accessToken);
-		if(userProfile != null) {
-			String expiry = getExpiryOfToken(userProfile);
-			boolean isTokenValid = isTokenValid(expiry);
-			if(isTokenValid) {
-				JSONObject jsonObject = new JSONObject(userProfile);
-				String email = jsonObject.getString("email");
-				List<GrantedAuthority> rolesList = new ArrayList<>();
-				rolesList.add(new SimpleGrantedAuthority("weshopify_user"));
-				authn = new UsernamePasswordAuthenticationToken(email, null, rolesList);
+		try {
+			String userProfile = getUserProfile(accessToken);
+			if(userProfile != null) {
+				String expiry = getExpiryOfToken(userProfile);
+				boolean isTokenValid = isTokenValid(expiry);
+				if(isTokenValid) {
+					JSONObject jsonObject = new JSONObject(userProfile);
+					String email = jsonObject.getString("email");
+					List<GrantedAuthority> rolesList = new ArrayList<>();
+					rolesList.add(new SimpleGrantedAuthority("weshopify_user"));
+					authn = new UsernamePasswordAuthenticationToken(email, null, rolesList);
+				}
+			}else {
+				throw new AccessTokenException("Token is Invalid");
 			}
+		}catch (Exception e) {
+			log.error("IDP Authz Service erro::"+e.getLocalizedMessage());
+		   throw new AccessTokenException(e.getLocalizedMessage());
 		}
+		
+		
 		
 		return authn;
 	}

@@ -47,6 +47,7 @@ public class BrandsResource {
 	
 	@GetMapping(path = {"/brands/{brandsId}"})
 	public ResponseEntity<BrandsBean> findBrandsById(@PathVariable("brandsId") String id){
+		log.info("Brand id is:\t"+id);
 		return new ResponseEntity<BrandsBean>(brandsManagementService.getBrandById(id), 
 				HttpStatus.OK);
 	}

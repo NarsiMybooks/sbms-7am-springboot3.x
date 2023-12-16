@@ -6,8 +6,21 @@ spring:
     active:
     - dev
     
+    
 server:
   port: 5053
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+        - '*'
+        
+  endpoint:
+    shutdown:
+      enabled: true
+
   
 eureka:
   client:
